@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+
+# Build
+bin/
+obj/
+
+# User files
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Upload files (rất quan trọng)
+wwwroot/uploads/
+
+# OS
+.DS_Store
+Thumbs.db
