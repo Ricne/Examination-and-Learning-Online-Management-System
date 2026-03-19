@@ -1,0 +1,65 @@
+﻿@model List<OMS.Models.Entities.Exam>
+
+<div class="card">
+    <div class="card-body">
+        <table id="codeExamTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Exam</th>
+                    <th style="width:220px;">Course</th>
+                    <th style="width:130px;">Published</th>
+                    <th style="width:160px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>@e.Examid</td>
+                        <td>
+                            <b>@e.Title</b>
+                            <div class="text-muted small">
+                                Duration: @e.Durationminutes phút
+                            </div>
+                        </td>
+                        <td>@e.Course?.Coursename</td>
+                        <td>
+                            @if (e.Ispublished)
+                            {
+                                <span class="badge badge-success">Published</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">Draft</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary"
+                               href="/teacher/accesscode/manage?examId=@e.Examid">
+                                <i class="fas fa-key"></i> Manage
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('#codeExamTable').DataTable({
+                pageLength: 10,
+                order: [[0,'desc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: { previous: "Trước", next: "Sau" }
+                }
+            });
+        });
+    </script>
+}

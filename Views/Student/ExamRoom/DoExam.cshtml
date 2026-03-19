@@ -1,0 +1,201 @@
+﻿@model OMS.Models.ViewModels.Student.DoExamVm
+
+<div class="card mb-3">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <h5 class="mb-1">@Model.ExamTitle</h5>
+            <div class="text-muted">
+                Bắt đầu lúc: <b>@Model.Starttime.ToString("yyyy-MM-dd HH:mm")</b> |
+                Thời lượng: <b>@Model.Durationminutes phút</b>
+            </div>
+        </div>
+
+        <div class="mt-2 mt-md-0 text-right">
+            <div class="small text-muted">Thời gian còn lại</div>
+            <div id="countdownBox" class="badge badge-danger p-3" style="font-size:20px;">
+                --:--:--
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post" id="examForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Attemptid" />
+    <input type="hidden" asp-for="Examid" />
+    <input type="hidden" asp-for="ExamTitle" />
+    <input type="hidden" asp-for="Durationminutes" />
+    <input type="hidden" asp-for="Starttime" />
+    <input type="hidden" asp-for="ExpireAt" />
+    <input type="hidden" asp-for="ServerNow" />
+
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        <input type="hidden" asp-for="Questions[i].Questionid" />
+        <input type="hidden" asp-for="Questions[i].Questioncontent" />
+        <input type="hidden" asp-for="Questions[i].Questiontype" />
+        <input type="hidden" asp-for="Questions[i].Marks" />
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="badge badge-info text-uppercase">@Model.Questions[i].Questiontype</span>
+                    <span class="badge badge-dark ml-2">@Model.Questions[i].Marks điểm</span>
+                </div>
+
+                <h6>Câu @(i + 1)</h6>
+                <div class="mb-3">@Model.Questions[i].Questioncontent</div>
+
+                @if (Model.Questions[i].Questiontype == "essay")
+                {
+                    <textarea asp-for="Questions[i].Essayanswer"
+                              class="form-control"
+                              rows="5"
+                              placeholder="Nhập câu trả lời..."></textarea>
+                }
+                else
+                {
+                    @for (int j = 0; j < Model.Questions[i].Choices.Count; j++)
+                    {
+                        <input type="hidden" asp-for="Questions[i].Choices[j].Choiceid" />
+                        <input type="hidden" asp-for="Questions[i].Choices[j].Choicetext" />
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="Questions[@i].Selectedchoiceid"
+                                   value="@Model.Questions[i].Choices[j].Choiceid"
+                            @(Model.Questions[i].Selectedchoiceid == Model.Questions[i].Choices[j].Choiceid ? "checked" : "") />
+                            <label class="form-check-label">
+                                @Model.Questions[i].Choices[j].Choicetext
+                            </label>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+    <div class="text-right">
+        <button class="btn btn-brand" type="submit" formaction="/student/examroom/doexam">
+            <i class="fas fa-save"></i> Lưu bài làm
+        </button>
+
+        <button class="btn btn-success ml-2"
+                type="submit"
+                formaction="/student/examroom/submitexam"
+                onclick="return confirm('Bạn chắc chắn muốn nộp bài?');">
+            <i class="fas fa-paper-plane"></i> Nộp bài
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+
+        (function(){
+
+            const form = document.getElementById("examForm");
+            const countdownBox = document.getElementById("countdownBox");
+
+            const serverNow = new Date('@Model.ServerNow.ToString("yyyy-MM-ddTHH:mm:ss")').getTime();
+            const expireAt = new Date('@Model.ExpireAt.ToString("yyyy-MM-ddTHH:mm:ss")').getTime();
+            const clientNow = new Date().getTime();
+
+            const offset = serverNow - clientNow;
+
+            let submitted = false;
+
+            let warn10 = false;
+            let warn5 = false;
+            let warn1 = false;
+
+            function format(ms){
+
+                const total = Math.floor(ms/1000);
+
+                const h = Math.floor(total/3600).toString().padStart(2,'0');
+                const m = Math.floor((total%3600)/60).toString().padStart(2,'0');
+                const s = Math.floor(total%60).toString().padStart(2,'0');
+
+                return h + ":" + m + ":" + s;
+            }
+
+            function autoSubmit(){
+
+                if(submitted) return;
+
+                submitted = true;
+
+                toastr.error("Đã hết thời gian làm bài. Hệ thống sẽ tự động nộp bài.", "Hết giờ");
+
+                const hidden = document.createElement("input");
+                hidden.type="hidden";
+                hidden.name="autoSubmit";
+                hidden.value="true";
+
+                form.appendChild(hidden);
+
+                setTimeout(function(){
+
+                    form.action="/student/examroom/submitexam";
+                    form.submit();
+
+                },1200);
+            }
+
+            function tick(){
+
+                const now = new Date().getTime() + offset;
+
+                const remain = expireAt - now;
+
+                if(remain <= 0){
+
+                    countdownBox.innerText="00:00:00";
+                    countdownBox.classList.remove("badge-warning");
+                    countdownBox.classList.add("badge-danger");
+
+                    autoSubmit();
+                    return;
+                }
+
+                countdownBox.innerText = format(remain);
+
+                if(remain <= 10*60*1000 && !warn10){
+
+                    warn10 = true;
+
+                    toastr.info("Còn 10 phút nữa sẽ hết giờ làm bài.", "Thông báo");
+                }
+
+                if(remain <= 5*60*1000 && !warn5){
+
+                    warn5 = true;
+
+                    countdownBox.classList.remove("badge-danger");
+                    countdownBox.classList.add("badge-warning");
+
+                    toastr.warning("Chỉ còn 5 phút! Hãy kiểm tra lại bài làm.", "Sắp hết giờ");
+                }
+
+                if(remain <= 60*1000 && !warn1){
+
+                    warn1 = true;
+
+                    countdownBox.classList.remove("badge-warning");
+                    countdownBox.classList.add("badge-danger");
+                    countdownBox.classList.add("countdown-danger");
+
+                    toastr.error("Chỉ còn 1 phút! Chuẩn bị nộp bài.", "Rất gấp");
+                }
+            }
+
+            tick();
+
+            setInterval(tick,1000);
+
+        })();
+
+    </script>
+}

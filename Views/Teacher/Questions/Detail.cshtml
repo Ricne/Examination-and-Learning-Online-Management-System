@@ -1,0 +1,45 @@
+﻿@model OMS.Models.Entities.Question
+
+@section PageActions {
+    <a class="btn btn-outline-primary" href="/teacher/questions/edit?id=@Model.Questionid">
+        <i class="fas fa-pen"></i> Edit
+    </a>
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="badge badge-info text-uppercase">@Model.Questiontype</span>
+            <span class="badge badge-dark ml-2">@Model.Marks điểm</span>
+            <span class="badge badge-secondary ml-2">@Model.Course?.Coursename</span>
+        </div>
+
+        <h5>Nội dung câu hỏi</h5>
+        <div class="p-3 bg-light rounded mb-4">
+            @Model.Questioncontent
+        </div>
+
+        @if (Model.Questiontype == "mcq" || Model.Questiontype == "true_false")
+        {
+            <h6>Đáp án</h6>
+            <div class="list-group">
+                @foreach (var c in Model.Choices.OrderBy(x => x.Choiceid))
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@c.Choicetext</span>
+                        @if (c.Iscorrect)
+                        {
+                            <span class="badge badge-success">Correct</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0">
+                Câu tự luận không có đáp án để lựa chọn.
+            </div>
+        }
+    </div>
+</div>

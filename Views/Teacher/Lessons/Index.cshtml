@@ -1,0 +1,134 @@
+﻿@model List<OMS.Models.Entities.Lesson>
+@{
+    var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course> ?? Array.Empty<OMS.Models.Entities.Course>();
+    int? courseId = ViewBag.CourseId as int?;
+}
+
+@section PageActions {
+    <a class="btn btn-brand" href="/teacher/lessons/create">
+        <i class="fas fa-plus"></i> Tạo bài giảng
+    </a>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" action="/teacher/lessons/index" class="row">
+            <div class="col-md-6">
+                <label>Khóa học</label>
+                <select class="form-control select2" name="courseId">
+                    <option value="">-- Tất cả khóa học --</option>
+                    @foreach (var c in courses)
+                    {
+                        <option value="@c.Courseid" selected="@(courseId == c.Courseid)">
+                            @c.Coursename
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-outline-primary w-100" type="submit">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table id="lessonTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Title</th>
+                    <th style="width:220px;">Course</th>
+                    <th style="width:100px;">Order</th>
+                    <th style="width:100px;">Publish</th>
+                    <th style="width:140px;">File</th>
+                    <th style="width:180px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td>@l.Lessonid</td>
+                        <td>
+                            <b>@l.Title</b>
+                            @if (!string.IsNullOrWhiteSpace(l.Content))
+                            {
+                                <div class="text-muted small" style="max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    @l.Content
+                                </div>
+                            }
+                        </td>
+                        <td>@l.Course?.Coursename</td>
+                        <td>@l.Lessonorder</td>
+                        <td>
+                            @if (l.Ispublished)
+                            {
+                                <span class="badge badge-success">ON</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">OFF</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(l.Attachmenturl))
+                            {
+                                <a href="@l.Attachmenturl" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-file"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No file</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" href="/teacher/lessons/edit?id=@l.Lessonid">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <form method="post" action="/teacher/lessons/togglepublish" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@l.Lessonid" />
+                                <button class="btn btn-sm btn-outline-success ml-1" type="submit">
+                                    <i class="fas fa-bullhorn"></i>
+                                </button>
+                            </form>
+
+                            <form method="post" action="/teacher/lessons/delete" class="d-inline"
+                                  onsubmit="return confirm('Xóa bài giảng này?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@l.Lessonid" />
+                                <button class="btn btn-sm btn-outline-danger ml-1" type="submit">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('.select2').select2({ width:'100%' });
+            $('#lessonTable').DataTable({
+                pageLength: 10,
+                order: [[3,'asc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: { previous: "Trước", next: "Sau" }
+                }
+            });
+        });
+    </script>
+}

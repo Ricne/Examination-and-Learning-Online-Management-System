@@ -1,0 +1,75 @@
+﻿@model OMS.Models.ViewModels.Teacher.LessonVm
+@{
+    var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course> ?? Array.Empty<OMS.Models.Entities.Course>();
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/teacher/lessons/create" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label>Khóa học</label>
+                <select asp-for="Courseid" class="form-control select2">
+                    <option value="">-- Chọn khóa học --</option>
+                    @foreach (var c in courses)
+                    {
+                        <option value="@c.Courseid">@c.Coursename</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="Courseid"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Tiêu đề bài giảng</label>
+                <input asp-for="Title" class="form-control" />
+                <span class="text-danger" asp-validation-for="Title"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Nội dung</label>
+                <textarea asp-for="Content" class="form-control" rows="6"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Video URL</label>
+                <input asp-for="Videourl" class="form-control" placeholder="https://youtube.com/..." />
+            </div>
+
+            <div class="form-group">
+                <label>File bài giảng (PDF / PPTX / DOCX)</label>
+                <input asp-for="AttachmentFile" type="file" class="form-control" />
+                <small class="text-muted">Hỗ trợ pdf, ppt, pptx, doc, docx. Tối đa 20MB.</small>
+                <span class="text-danger" asp-validation-for="AttachmentFile"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Thứ tự bài học</label>
+                <input asp-for="Lessonorder" class="form-control" />
+                <span class="text-danger" asp-validation-for="Lessonorder"></span>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="Ispublished" class="form-check-input" />
+                <label class="form-check-label">Publish ngay</label>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-brand" type="submit">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <a class="btn btn-outline-secondary ml-2" href="/teacher/lessons/index">
+                    Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('.select2').select2({ width:'100%' });
+        });
+    </script>
+}

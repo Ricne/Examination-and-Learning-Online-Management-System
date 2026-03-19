@@ -1,0 +1,152 @@
+﻿@{
+    var avgScore = (decimal)(ViewBag.AvgScore ?? 0m);
+    var myCourses = ViewBag.MyCourses as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+    var recentExams = ViewBag.RecentExams as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+}
+
+@section PageActions {
+    <a class="btn btn-brand" href="/courses/index">
+        <i class="fas fa-book-open"></i> Khóa học của tôi
+    </a>
+    <a class="btn btn-outline-primary ml-2" href="/examroom/entercode">
+        <i class="fas fa-key"></i> Vào phòng thi
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@ViewBag.TotalCourses</h3>
+                <p>Khóa học của tôi</p>
+            </div>
+            <div class="icon"><i class="fas fa-book-open"></i></div>
+            <a href="/student/courses/index" class="small-box-footer">Xem <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@ViewBag.CompletedLessons</h3>
+                <p>Bài giảng đã hoàn thành</p>
+            </div>
+            <div class="icon"><i class="fas fa-circle-check"></i></div>
+            <a href="/student/lessons/index" class="small-box-footer">Học tiếp <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.TotalAttempts</h3>
+                <p>Bài thi đã làm</p>
+            </div>
+            <div class="icon"><i class="fas fa-file-lines"></i></div>
+            <a href="/results/my" class="small-box-footer">Xem kết quả <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@avgScore.ToString("0.##")</h3>
+                <p>Điểm trung bình</p>
+            </div>
+            <div class="icon"><i class="fas fa-star"></i></div>
+            <a href="/results/my" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <b><i class="fas fa-book mr-1"></i> Khóa học đang học</b>
+                <a href="/courses/index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:70px;">ID</th>
+                            <th>Khóa học</th>
+                            <th style="width:180px;">Môn học</th>
+                            <th style="width:180px;">Giảng viên</th>
+                            <th style="width:110px;">Lessons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!myCourses.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-muted">Bạn chưa đăng ký khóa học nào.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var c in myCourses)
+                            {
+                                <tr>
+                                    <td>@c.Courseid</td>
+                                    <td><b>@c.Coursename</b></td>
+                                    <td><span class="badge badge-info">@c.SubjectName</span></td>
+                                    <td>@c.TeacherName</td>
+                                    <td><span class="badge badge-dark">@c.Lessons</span></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <b><i class="fas fa-clock mr-1"></i> Bài thi gần đây</b>
+                <a href="/results/my" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                @if (!recentExams.Any())
+                {
+                    <div class="text-muted">Chưa có bài thi nào.</div>
+                }
+                else
+                {
+                    foreach (var e in recentExams)
+                    {
+                        <div class="border rounded p-3 mb-2">
+                            <div class="font-weight-bold">@e.ExamTitle</div>
+                            <div class="text-muted small mb-2">
+                                Submit: @(e.Submittime != null ? ((DateTime)e.Submittime).ToString("yyyy-MM-dd HH:mm") : "-")
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    @if ((string)e.Status == "graded")
+                                    {
+                                        <span class="badge badge-success">graded</span>
+                                    }
+                                    else if ((string)e.Status == "submitted")
+                                    {
+                                        <span class="badge badge-warning">submitted</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">inprogress</span>
+                                    }
+                                </div>
+                                <div>
+                                    <span class="badge badge-info">@(e.Totalscore?.ToString("0.##") ?? "-")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

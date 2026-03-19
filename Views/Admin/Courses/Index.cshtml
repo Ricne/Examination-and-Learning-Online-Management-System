@@ -1,0 +1,143 @@
+﻿@model List<OMS.Models.Entities.Course>
+@{
+    var showDeleted = (bool)(ViewBag.ShowDeleted ?? false);
+}
+
+@section PageActions {
+    <a class="btn btn-brand" href="/admin/courses/create">
+        <i class="fas fa-plus"></i> Tạo khóa học
+    </a>
+
+    <a class="btn btn-ghost ml-2" href="/admin/courses/index?showDeleted=@(!showDeleted)">
+        <i class="fas fa-filter"></i>
+        @(showDeleted ? "Ẩn đã xóa" : "Xem thùng rác")
+    </a>
+}
+
+<div class="card">
+    <div class="card-body">
+        <table id="coursesTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Khóa học</th>
+                    <th style="width:180px;">Môn học</th>
+                    <th style="width:220px;">Giảng viên</th>
+                    <th style="width:110px;">Active</th>
+                    <th style="width:110px;">Deleted</th>
+                    <th style="width:240px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>@c.Courseid</td>
+                        <td>
+                            <b>@c.Coursename</b>
+                            @if (!string.IsNullOrWhiteSpace(c.Description))
+                            {
+                                <div class="text-muted" style="max-width:560px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    @c.Description
+                                </div>
+                            }
+                        </td>
+                        <td><span class="badge badge-info">@c.Subject?.Subjectname</span></td>
+                        <td>
+                            <i class="fas fa-user-tie text-muted mr-1"></i>
+                            @c.Teacher?.Fullname
+                        </td>
+                        <td>
+                            @if (c.Isactive == true)
+                            {
+                                <span class="badge badge-success">ON</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">OFF</span>
+                            }
+                        </td>
+                        <td>
+                            @if (c.Isdeleted == true)
+                            {
+                                <span class="badge badge-danger">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-info">No</span>
+                            }
+                        </td>
+                        <td>
+                            @if (c.Isdeleted != true)
+                            {
+                                <form class="d-inline" method="post" action="/admin/courses/toggleactive?id=@c.Courseid"
+                                      data-name="@c.Coursename" data-action="toggle">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-@(c.Isactive==true ? "secondary" : "success")" type="submit"
+                                            title="@(c.Isactive==true ? "Tắt" : "Bật")">
+                                        <i class="fas fa-@(c.Isactive==true ? "toggle-off" : "toggle-on")"></i>
+                                    </button>
+                                </form>
+
+                                <a class="btn btn-sm btn-warning ml-1" href="/admin/courses/edit?id=@c.Courseid" title="Edit">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+
+                                <form class="d-inline" method="post" action="/admin/courses/softdelete?id=@c.Courseid"
+                                      data-name="@c.Coursename" data-action="delete">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-danger ml-1" type="submit" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form class="d-inline" method="post" action="/admin/courses/restore?id=@c.Courseid"
+                                      data-name="@c.Coursename" data-action="restore">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-success" type="submit" title="Restore">
+                                        <i class="fas fa-rotate-left"></i>
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#coursesTable').DataTable({
+                pageLength: 10,
+                order: [[0, 'desc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: { previous: "Trước", next: "Sau" }
+                }
+            });
+
+            $('form[data-action]').on('submit', async function (e) {
+                e.preventDefault();
+                const name = $(this).data('name');
+                const action = $(this).data('action');
+
+                let title = "Xác nhận";
+                let text = `Bạn muốn thao tác với "${name}"?`;
+
+                if (action === "toggle") { title = "Bật/Tắt khóa học?"; text = `Đổi trạng thái Active của "${name}"?`; }
+                if (action === "delete") { title = "Xóa khóa học?"; text = `Chuyển "${name}" vào thùng rác?`; }
+                if (action === "restore") { title = "Khôi phục khóa học?"; text = `Khôi phục "${name}"?`; }
+
+                const ok = await confirmAction(title, text);
+                if (ok) this.submit();
+            });
+        });
+    </script>
+}

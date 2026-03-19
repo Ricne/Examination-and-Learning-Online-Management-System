@@ -1,0 +1,111 @@
+﻿@model List<OMS.Models.Entities.Question>
+@{
+    var exam = ViewBag.Exam as OMS.Models.Entities.Exam;
+    var selectedIds = ViewBag.SelectedIds as HashSet<int> ?? new HashSet<int>();
+}
+
+@section PageActions {
+    <a class="btn btn-outline-primary" href="/teacher/exams/index">
+        <i class="fas fa-arrow-left"></i> Về Exams
+    </a>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>@exam?.Title</h5>
+        <div class="text-muted">
+            Course: <b>@exam?.Course?.Coursename</b> |
+            Total Marks: <b>@exam?.Totalmarks</b>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><b>Random Add</b></div>
+    <div class="card-body">
+        <form method="post" action="/teacher/exambuilder/randomadd" class="form-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Examid" value="@exam?.Examid" />
+
+            <label class="mr-2">Số câu random:</label>
+            <input type="number" name="NumberOfQuestions" value="5" min="1" class="form-control mr-2" style="width:120px;" />
+
+            <button class="btn btn-brand" type="submit">
+                <i class="fas fa-shuffle"></i> Random Add
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><b>Question Bank cùng Course</b></div>
+    <div class="card-body">
+        <table id="builderTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Nội dung</th>
+                    <th style="width:140px;">Type</th>
+                    <th style="width:100px;">Marks</th>
+                    <th style="width:140px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var q in Model)
+                {
+                    var inExam = selectedIds.Contains(q.Questionid);
+
+                    <tr>
+                        <td>@q.Questionid</td>
+                        <td style="max-width:560px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                            <b>@q.Questioncontent</b>
+                        </td>
+                        <td><span class="badge badge-info text-uppercase">@q.Questiontype</span></td>
+                        <td><span class="badge badge-dark">@q.Marks</span></td>
+                        <td>
+                            @if (!inExam)
+                            {
+                                <form method="post" action="/teacher/exambuilder/addquestion" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="examId" value="@exam?.Examid" />
+                                    <input type="hidden" name="questionId" value="@q.Questionid" />
+                                    <button class="btn btn-sm btn-outline-success" type="submit">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" action="/teacher/exambuilder/removequestion" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="examId" value="@exam?.Examid" />
+                                    <input type="hidden" name="questionId" value="@q.Questionid" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('#builderTable').DataTable({
+                pageLength: 10,
+                order: [[0,'desc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: { previous: "Trước", next: "Sau" }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,90 @@
+﻿@model OMS.Models.ViewModels.Teacher.ExamEditVm
+@{
+    var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course> ?? Array.Empty<OMS.Models.Entities.Course>();
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/teacher/exams/edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Examid" />
+
+            <div class="form-group">
+                <label>Khóa học</label>
+                <select asp-for="Courseid" class="form-control select2">
+                    @foreach (var c in courses)
+                    {
+                        <option value="@c.Courseid">@c.Coursename</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="Courseid"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Title</label>
+                <input asp-for="Title" class="form-control" />
+                <span class="text-danger" asp-validation-for="Title"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <input asp-for="Durationminutes" class="form-control" />
+                <span class="text-danger" asp-validation-for="Durationminutes"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input asp-for="Starttime" type="datetime-local" class="form-control"
+                               value="@(Model.Starttime.HasValue ? Model.Starttime.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input asp-for="Endtime" type="datetime-local" class="form-control"
+                               value="@(Model.Endtime.HasValue ? Model.Endtime.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Max Attempts (0 = unlimited)</label>
+                <input asp-for="Maxattempts" class="form-control" />
+                <span class="text-danger" asp-validation-for="Maxattempts"></span>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="Ispublished" class="form-check-input" />
+                <label class="form-check-label">Published</label>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="Allowreview" class="form-check-input" />
+                <label class="form-check-label">Cho review đáp án sau thi</label>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-brand" type="submit">
+                    <i class="fas fa-save"></i> Update
+                </button>
+                <a class="btn btn-outline-secondary ml-2" href="/teacher/exams/index">
+                    Back
+                </a>
+            </div>
+
+            <div class="text-danger mt-3">
+                @Html.ValidationSummary()
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('.select2').select2({ width:'100%' });
+        });
+    </script>
+}

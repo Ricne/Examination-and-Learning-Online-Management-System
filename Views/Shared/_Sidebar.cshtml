@@ -1,0 +1,140 @@
+﻿@using System.Security.Claims
+@{
+    var isAuth = User?.Identity?.IsAuthenticated ?? false;
+    var role = isAuth ? (User.FindFirst(ClaimTypes.Role)?.Value ?? "") : "";
+    var currentPath = Context.Request.Path.Value?.ToLower() ?? "";
+}
+
+<ul class="nav nav-pills nav-sidebar flex-column nav-flat" data-widget="treeview" role="menu" data-accordion="false">
+
+    <li class="nav-item">
+        <a href="/" class="nav-link @(currentPath == "/" ? "active" : "")">
+            <i class="nav-icon fas fa-house"></i>
+            <p>Trang chủ</p>
+        </a>
+    </li>
+
+    @if (!isAuth)
+    {
+        <li class="nav-item">
+            <a href="/Auth/Login" class="nav-link @(currentPath.Contains("/auth/login") ? "active" : "")">
+                <i class="nav-icon fas fa-right-to-bracket"></i>
+                <p>Đăng nhập</p>
+            </a>
+        </li>
+    }
+    else
+    {
+        if (role == "admin")
+        {
+            <li class="nav-header text-uppercase">
+                Quản trị hệ thống <span class="badge badge-info ml-2">ADMIN</span>
+            </li>
+
+
+            <li class="nav-item">
+                <a href="/admin/users/index" class="nav-link @(currentPath.Contains("/admin/users") ? "active" : "")">
+                    <i class="nav-icon fas fa-users"></i>
+                    <p>Người dùng</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/subjects/index" class="nav-link @(currentPath.Contains("/admin/subjects") ? "active" : "")">
+                    <i class="nav-icon fas fa-layer-group"></i>
+                    <p>Môn học</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/courses/index" class="nav-link @(currentPath.Contains("/admin/courses") ? "active" : "")">
+                    <i class="nav-icon fas fa-book-open"></i>
+                    <p>Khóa học</p>
+                </a>
+            </li>
+        }
+        else if (role == "teacher")
+        {
+            <li class="nav-header text-uppercase">
+                Giảng viên <span class="badge badge-success ml-2">TEACHER</span>
+            </li>
+
+
+            <li class="nav-item">
+                <a href="/teacher/exams/index" class="nav-link @(currentPath.Contains("/teacher/exams") ? "active" : "")">
+                    <i class="nav-icon fas fa-file-lines"></i>
+                    <p>Đề thi</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/teacher/accesscode/index" class="nav-link @(currentPath.Contains("/teacher/accesscode") ? "active" : "")">
+                    <i class="nav-icon fas fa-key"></i>
+                    <p>Mã code</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/teacher/courses/index" class="nav-link @(currentPath.Contains("/teacher/courses") ? "active" : "")">
+                    <i class="nav-icon fas fa-book-open"></i>
+                    <p>Khóa học của tôi</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/teacher/lessons/index" class="nav-link @(currentPath.Contains("/teacher/lessons") ? "active" : "")">
+                    <i class="nav-icon fas fa-file-powerpoint"></i>
+                    <p>Bài giảng</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/teacher/attempts/index" class="nav-link @(currentPath.Contains("/teacher/attempts") ? "active" : "")">
+                    <i class="nav-icon fas fa-file-signature"></i>
+                    <p>Chấm điểm</p>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-header text-uppercase">
+                Học viên <span class="badge badge-warning ml-2">STUDENT</span>
+            </li>
+
+            <li class="nav-item">
+                <a href="/student/courses/available" class="nav-link @(currentPath.Contains("/student/courses/available") ? "active" : "")">
+                    <i class="nav-icon fas fa-user-plus"></i>
+                    <p>Đăng ký khóa học</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/student/courses/index" class="nav-link @(currentPath.Contains("/student/courses/index") ? "active" : "")">
+                    <i class="nav-icon fas fa-book-open"></i>
+                    <p>Khóa học của tôi</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/student/lessons/index" class="nav-link @(currentPath.Contains("/student/lessons") ? "active" : "")">
+                    <i class="nav-icon fas fa-file-lines"></i>
+                    <p>Bài giảng</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/student/examroom/entercode" class="nav-link @(currentPath.Contains("/student/examroom") ? "active" : "")">
+                    <i class="nav-icon fas fa-key"></i>
+                    <p>Vào phòng thi</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/student/results/my" class="nav-link @(currentPath.Contains("/student/results") ? "active" : "")">
+                    <i class="nav-icon fas fa-chart-line"></i>
+                    <p>Kết quả</p>
+                </a>
+            </li>
+        }
+    }
+</ul>

@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"] ?? "Import Excel";
+}
+
+@section PageActions {
+    <a class="btn btn-outline-primary" href="/teacher/questions/downloadtemplate">
+        <i class="fas fa-download"></i> Download Template
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <b>Import Excel theo form chuẩn</b>
+                    <div class="text-muted mt-1">
+                        Tải template → nhập đúng format → upload. Dòng sai sẽ được báo lỗi theo row.
+                    </div>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="importForm">
+                    @Html.AntiForgeryToken()
+
+                    @{
+                        var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course> ?? Array.Empty<OMS.Models.Entities.Course>();
+                    }
+
+                    <div class="form-group">
+                        <label>Chọn khóa học (khuyến nghị)</label>
+                        <select class="form-control select2" name="selectedCourseId">
+                            <option value="">-- Không chọn (dùng mã môn học trong file Excel) --</option>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.Courseid">@c.Coursename</option>
+                            }
+                        </select>
+                        <small class="text-muted">
+                            Nếu chọn khóa học ở đây, hệ thống sẽ <b>override</b> CourseId của mọi dòng trong Excel.
+                        </small>
+                    </div>
+
+                    <div class="oms-dropzone" id="dropzone">
+                        <div class="dz-icon">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                        </div>
+                        <div class="dz-title">Kéo thả file Excel vào đây</div>
+                        <div class="dz-sub">hoặc bấm để chọn file (.xlsx)</div>
+                        <input type="file" name="file" id="fileInput" accept=".xlsx" hidden />
+                        <div class="dz-file mt-3" id="fileInfo" style="display:none;">
+                            <span class="badge badge-info"><i class="fas fa-file-excel"></i></span>
+                            <span class="ml-2" id="fileName"></span>
+                            <button type="button" class="btn btn-sm btn-outline-danger ml-2" id="clearFile">
+                                <i class="fas fa-x"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-brand" type="submit">
+                            <i class="fas fa-upload"></i> Import
+                        </button>
+                        <a class="btn btn-outline-secondary ml-2" href="/teacher/questions/index">
+                            Back
+                        </a>
+                    </div>
+                </form>
+
+                <hr />
+                <div class="text-muted small">
+                    <b>Note:</b> MCQ cần ChoiceA/ChoiceB. True/False dùng Correct=TRUE/FALSE. Essay bỏ trống choices.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <b>Gợi ý</b>
+                <ul class="mt-2 mb-0">
+                    <li>Import xong có thể vào Question Bank để sửa.</li>
+                    <li>Nếu muốn nhập nhanh, copy/paste từ Word vào Excel trước.</li>
+                    <li>Template có sẵn header, không đổi tên cột.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .oms-dropzone {
+            border: 2px dashed rgba(37,99,235,.35);
+            border-radius: 18px;
+            padding: 26px;
+            background: radial-gradient(circle at 10% 10%, rgba(37,99,235,.10), transparent 35%), radial-gradient(circle at 90% 0%, rgba(14,165,233,.10), transparent 40%), #fff;
+            text-align: center;
+            cursor: pointer;
+            transition: .15s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,.05);
+        }
+
+            .oms-dropzone:hover {
+                transform: translateY(-1px);
+                border-color: rgba(37,99,235,.55);
+                box-shadow: 0 16px 34px rgba(0,0,0,.07);
+            }
+
+            .oms-dropzone.dragover {
+                border-color: rgba(34,197,94,.55);
+                background: rgba(34,197,94,.06);
+            }
+
+        .dz-icon {
+            font-size: 34px;
+            color: #2563eb;
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(37,99,235,.12);
+            margin-bottom: 10px;
+        }
+
+        .dz-title {
+            font-weight: 800;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .dz-sub {
+            color: #64748b;
+            margin-top: 4px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const dz = document.getElementById('dropzone');
+        const input = document.getElementById('fileInput');
+        const info = document.getElementById('fileInfo');
+        const nameEl = document.getElementById('fileName');
+        const clearBtn = document.getElementById('clearFile');
+
+        $(function () {
+            $('.select2').select2({ width: '100%' });
+        });
+
+        function setFile(f){
+            if(!f) return;
+            nameEl.textContent = f.name + " (" + Math.round(f.size/1024) + " KB)";
+            info.style.display = 'inline-flex';
+        }
+
+        dz.addEventListener('click', () => input.click());
+
+        input.addEventListener('change', () => {
+            if(input.files && input.files[0]) setFile(input.files[0]);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            input.value = "";
+            info.style.display = 'none';
+            nameEl.textContent = "";
+        });
+
+        dz.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dz.classList.add('dragover');
+        });
+
+        dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+
+        dz.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dz.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if(files && files.length){
+                input.files = files;
+                setFile(files[0]);
+            }
+        });
+    </script>
+}

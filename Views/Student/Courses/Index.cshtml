@@ -1,0 +1,74 @@
+﻿@model IEnumerable<dynamic>
+
+@section PageActions {
+    <a class="btn btn-brand" href="/student/courses/available">
+        <i class="fas fa-user-plus"></i> Đăng ký khóa học
+    </a>
+}
+
+<div class="card">
+    <div class="card-body">
+        <table id="studentCoursesTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Khóa học</th>
+                    <th style="width:180px;">Môn học</th>
+                    <th style="width:180px;">Giảng viên</th>
+                    <th style="width:140px;">Tiến độ</th>
+                    <th style="width:200px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    var percent = c.LessonsCount == 0 ? 0 : (int)Math.Round((double)c.ProgressCount * 100 / (double)c.LessonsCount);
+
+                    <tr>
+                        <td>@c.Courseid</td>
+                        <td><b>@c.Coursename</b></td>
+                        <td><span class="badge badge-info">@c.SubjectName</span></td>
+                        <td>@c.TeacherName</td>
+                        <td>
+                            <div class="mb-1 small">@c.ProgressCount / @c.LessonsCount</div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width:@percent%"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" href="/student/lessons/index?courseId=@c.Courseid">
+                                <i class="fas fa-file-lines"></i> Bài giảng
+                            </a>
+
+                            <form method="post" action="/student/courses/unenroll" class="d-inline"
+                                  onsubmit="return confirm('Hủy đăng ký khóa học này?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="courseId" value="@c.Courseid" />
+                                <button class="btn btn-sm btn-outline-danger ml-1" type="submit">
+                                    <i class="fas fa-user-minus"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('#studentCoursesTable').DataTable({
+                pageLength: 10,
+                order: [[0,'asc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: { previous: "Trước", next: "Sau" }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<dynamic>
+@{
+    var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course> ?? Array.Empty<OMS.Models.Entities.Course>();
+    int? courseId = ViewBag.CourseId as int?;
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" action="/student/lessons/index" class="row">
+            <div class="col-md-6">
+                <label>Khóa học</label>
+                <select class="form-control select2" name="courseId">
+                    <option value="">-- Tất cả khóa học --</option>
+                    @foreach (var c in courses)
+                    {
+                        <option value="@c.Courseid" selected="@(courseId == c.Courseid)">
+                            @c.Coursename
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-outline-primary w-100" type="submit">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var l in Model)
+    {
+        <div class="col-lg-6">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span class="badge badge-info">@l.CourseName</span>
+                        <span class="badge badge-dark ml-2">Lesson @l.Lessonorder</span>
+                        @if (l.IsCompleted)
+                        {
+                            <span class="badge badge-success ml-2">Completed</span>
+                        }
+                    </div>
+
+                    <h5>@l.Title</h5>
+
+                    @if (!string.IsNullOrWhiteSpace((string?)l.Content))
+                    {
+                        <div class="text-muted mb-3" style="max-height:50px;overflow:hidden;">
+                            @l.Content
+                        </div>
+                    }
+
+                    <a class="btn btn-sm btn-brand" href="/student/lessons/detail?id=@l.Lessonid">
+                        <i class="fas fa-play-circle"></i> Học bài
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('.select2').select2({ width:'100%' });
+        });
+    </script>
+}

@@ -1,0 +1,230 @@
+﻿@{
+    ViewData["Title"] = ViewData["Title"] ?? "Admin Dashboard";
+    var completionRate = (decimal)(ViewBag.CompletionRate ?? 0m);
+    var avgScore = (decimal)(ViewBag.AvgScore ?? 0m);
+
+    var topCourses = ViewBag.TopCourses as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+    var latestAttempts = ViewBag.LatestAttempts as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+}
+
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@ViewBag.TotalUsers</h3>
+                <p>Tổng người dùng</p>
+            </div>
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <a href="/admin/users/index" class="small-box-footer">Quản lý <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@ViewBag.TotalTeachers</h3>
+                <p>Giảng viên</p>
+            </div>
+            <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <a href="/admin/users/index" class="small-box-footer">Xem danh sách <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.TotalStudents</h3>
+                <p>Học viên</p>
+            </div>
+            <div class="icon"><i class="fas fa-user-graduate"></i></div>
+            <a href="/admin/users/index" class="small-box-footer">Xem danh sách <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@ViewBag.TotalCoursesActive</h3>
+                <p>Khóa học (Active)</p>
+            </div>
+            <div class="icon"><i class="fas fa-book-open"></i></div>
+            <a href="/admin/courses/index" class="small-box-footer">Quản lý <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3>@ViewBag.TotalSubjectsActive</h3>
+                <p>Môn học (Active)</p>
+            </div>
+            <div class="icon"><i class="fas fa-layer-group"></i></div>
+            <a href="/admin/subjects/index" class="small-box-footer">Quản lý <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-teal">
+            <div class="inner">
+                <h3>@ViewBag.TotalExamsPublished</h3>
+                <p>Đề thi (Published)</p>
+            </div>
+            <div class="icon"><i class="fas fa-file-lines"></i></div>
+            <a href="#" class="small-box-footer">Sắp có <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-secondary">
+            <div class="inner">
+                <h3>@completionRate.ToString("0.##")<sup style="font-size: 20px">%</sup></h3>
+                <p>Tỷ lệ hoàn thành lesson</p>
+            </div>
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+            <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-olive">
+            <div class="inner">
+                <h3>@avgScore.ToString("0.##")</h3>
+                <p>Điểm trung bình</p>
+            </div>
+            <div class="icon"><i class="fas fa-star"></i></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <b><i class="fas fa-bolt mr-1"></i> Quick Actions</b>
+            </div>
+            <div class="card-body">
+                <a class="btn btn-brand btn-block mb-2" href="/admin/users/index">
+                    <i class="fas fa-users mr-1"></i> Quản lý Users
+                </a>
+                <a class="btn btn-outline-primary btn-block mb-2" href="/admin/subjects/index">
+                    <i class="fas fa-layer-group mr-1"></i> Quản lý Subjects
+                </a>
+                <a class="btn btn-outline-primary btn-block" href="/admin/courses/index">
+                    <i class="fas fa-book mr-1"></i> Quản lý Courses
+                </a>
+
+                <hr />
+                <div class="text-muted small">
+                    Gợi ý: Sau khi tạo Course → chuyển sang Teacher để tạo Question Bank & Exam.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top courses -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <b><i class="fas fa-ranking-star mr-1"></i> Top khóa học đông học viên</b>
+                <a href="/admin/courses/index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:70px;">ID</th>
+                            <th>Khóa học</th>
+                            <th style="width:180px;">Môn học</th>
+                            <th style="width:220px;">Giảng viên</th>
+                            <th style="width:120px;">Học viên</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!topCourses.Any())
+                        {
+                            <tr><td colspan="5" class="text-muted">Chưa có dữ liệu.</td></tr>
+                        }
+                        else
+                        {
+                            foreach (var c in topCourses)
+                            {
+                                <tr>
+                                    <td>@c.Courseid</td>
+                                    <td><b>@c.Coursename</b></td>
+                                    <td><span class="badge badge-info">@c.SubjectName</span></td>
+                                    <td>@c.TeacherName</td>
+                                    <td><span class="badge badge-dark">@c.Students</span></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Latest attempts -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <b><i class="fas fa-clock mr-1"></i> Bài nộp gần đây</b>
+                <span class="text-muted small">Top 10</span>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:90px;">Attempt</th>
+                            <th>Exam</th>
+                            <th style="width:220px;">Student</th>
+                            <th style="width:120px;">Status</th>
+                            <th style="width:160px;">Submit</th>
+                            <th style="width:110px;">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!latestAttempts.Any())
+                        {
+                            <tr><td colspan="6" class="text-muted">Chưa có attempt nào.</td></tr>
+                        }
+                        else
+                        {
+                            foreach (var a in latestAttempts)
+                            {
+                                <tr>
+                                    <td>#@a.Attemptid</td>
+                                    <td><b>@a.ExamTitle</b></td>
+                                    <td>@a.StudentName</td>
+                                    <td>
+                                        @if ((string)a.Status == "graded")
+                                        {
+                                            <span class="badge badge-success text-uppercase">graded</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning text-uppercase">submitted</span>
+                                        }
+                                    </td>
+                                    <td class="text-muted">
+                                        @(a.Submittime != null ? ((DateTime)a.Submittime).ToString("yyyy-MM-dd HH:mm") : "-")
+                                    </td>
+                                    <td>
+                                        @if (a.Totalscore != null)
+                                        {
+                                            <span class="badge badge-info">@a.Totalscore</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,73 @@
+﻿@model OMS.Models.ViewModels.Admin.CourseEditVm
+@{
+    var subjects = (IEnumerable<OMS.Models.Entities.Subject>)ViewBag.Subjects;
+    var teachers = (IEnumerable<OMS.Models.Entities.User>)ViewBag.Teachers;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="CourseId" />
+
+            <div class="form-group">
+                <label>Tên khóa học</label>
+                <input asp-for="CourseName" class="form-control" />
+                <span class="text-danger" asp-validation-for="CourseName"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Môn học</label>
+                        <select asp-for="SubjectId" class="form-control select2">
+                            @foreach (var s in subjects)
+                            {
+                                <option value="@s.Subjectid">@s.Subjectname</option>
+                            }
+                        </select>
+                        <span class="text-danger" asp-validation-for="SubjectId"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Giảng viên</label>
+                        <select asp-for="TeacherId" class="form-control select2">
+                            @foreach (var t in teachers)
+                            {
+                                <option value="@t.Userid">@t.Fullname (@t.Email)</option>
+                            }
+                        </select>
+                        <span class="text-danger" asp-validation-for="TeacherId"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Mô tả</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label class="form-check-label">Active</label>
+            </div>
+
+            <div class="mt-3">
+                <button class="btn btn-brand" type="submit">
+                    <i class="fas fa-save"></i> Cập nhật
+                </button>
+                <a class="btn btn-ghost ml-2" href="/admin/courses/index">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('.select2').select2({ width: '100%' });
+        });
+    </script>
+}

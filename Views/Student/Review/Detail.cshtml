@@ -1,0 +1,74 @@
+﻿@model dynamic
+
+@section PageActions {
+    <a class="btn btn-outline-secondary" href="/student/results/detail?attemptId=@Model.Attemptid">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="mb-2">
+            <span class="badge badge-info">@Model.CourseName</span>
+            <span class="badge badge-dark ml-2">@Model.ExamTitle</span>
+        </div>
+
+        <div class="text-muted">
+            Final Score: <b>@(Model.Finalscore?.ToString("0.##") ?? Model.Totalscore?.ToString("0.##") ?? "-")</b>
+        </div>
+    </div>
+</div>
+
+@foreach (var a in Model.Answers)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="mb-2">
+                <span class="badge badge-info text-uppercase">@a.Questiontype</span>
+                <span class="badge badge-dark ml-2">@a.Marks điểm</span>
+                <span class="badge badge-success ml-2">Điểm: @(a.Score?.ToString("0.##") ?? "0")</span>
+            </div>
+
+            <h6>Câu hỏi</h6>
+            <div class="p-3 bg-light rounded mb-3">
+                @a.Questioncontent
+            </div>
+
+            @if ((string)a.Questiontype == "essay")
+            {
+                <h6>Bài làm của bạn</h6>
+                <div class="p-3 bg-light rounded mb-3" style="white-space:pre-wrap;">
+                    @a.Essayanswer
+                </div>
+            }
+            else
+            {
+                <h6>Lựa chọn của bạn</h6>
+                <div class="mb-3">
+                    <span class="badge badge-secondary">@a.SelectedChoiceText</span>
+                </div>
+
+                <h6>Đáp án</h6>
+                <div class="list-group">
+                    @foreach (var c in a.AllChoices)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@c.Choicetext</span>
+
+                            <div>
+                                @if (a.SelectedChoiceId == c.Choiceid)
+                                {
+                                    <span class="badge badge-info mr-1">Bạn chọn</span>
+                                }
+                                @if (c.Iscorrect == true)
+                                {
+                                    <span class="badge badge-success">Đúng</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}

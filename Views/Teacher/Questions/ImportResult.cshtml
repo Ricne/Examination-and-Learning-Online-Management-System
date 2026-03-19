@@ -1,0 +1,60 @@
+﻿@model OMS.Models.ViewModels.Teacher.QuestionImportResultVm
+@{
+    ViewData["Title"] = "Import Result";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.TotalRows</h3>
+                <p>Tổng dòng dữ liệu</p>
+            </div>
+            <div class="icon"><i class="fas fa-list"></i></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@Model.Inserted</h3>
+                <p>Import thành công</p>
+            </div>
+            <div class="icon"><i class="fas fa-check"></i></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@Model.Failed</h3>
+                <p>Dòng lỗi</p>
+            </div>
+            <div class="icon"><i class="fas fa-triangle-exclamation"></i></div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><b>Chi tiết lỗi</b></div>
+    <div class="card-body">
+        @if (!Model.Errors.Any())
+        {
+            <div class="text-success"><i class="fas fa-check-circle"></i> Không có lỗi.</div>
+        }
+        else
+        {
+            <ul>
+                @foreach (var e in Model.Errors)
+                {
+                    <li class="text-danger">@e</li>
+                }
+            </ul>
+        }
+
+        <a class="btn btn-brand" href="/teacher/questions/index">
+            <i class="fas fa-arrow-left"></i> Về Question Bank
+        </a>
+        <a class="btn btn-outline-primary ml-2" href="/teacher/questions/import">
+            <i class="fas fa-file-excel"></i> Import tiếp
+        </a>
+    </div>
+</div>

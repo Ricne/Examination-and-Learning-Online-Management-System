@@ -1,0 +1,77 @@
+﻿@model IEnumerable<dynamic>
+@{
+    var keyword = ViewBag.Keyword as string ?? "";
+}
+
+@section PageActions {
+    <a class="btn btn-outline-primary" href="/student/courses/index">
+        <i class="fas fa-book-open"></i> Khóa học của tôi
+    </a>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" action="/student/courses/available" class="row">
+            <div class="col-md-9">
+                <label>Tìm khóa học</label>
+                <input type="text" name="keyword" value="@keyword" class="form-control"
+                       placeholder="Nhập tên khóa học, môn học, giảng viên..." />
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-outline-primary w-100" type="submit">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    @if (!Model.Any())
+    {
+        <div class="col-12">
+            <div class="alert alert-info mb-0">
+                Hiện chưa có khóa học nào phù hợp để đăng ký.
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var c in Model)
+        {
+            <div class="col-lg-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge badge-info">@c.SubjectName</span>
+                            <span class="badge badge-dark ml-2">@c.LessonsCount bài giảng</span>
+                            <span class="badge badge-secondary ml-2">@c.ExamsCount bài thi</span>
+                        </div>
+
+                        <h5 class="mb-2">@c.Coursename</h5>
+
+                        <div class="text-muted mb-2">
+                            Giảng viên: <b>@c.TeacherName</b>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace((string?)c.Description))
+                        {
+                            <div class="text-muted mb-3" style="max-height:60px;overflow:hidden;">
+                                @c.Description
+                            </div>
+                        }
+
+                        <form method="post" action="/student/courses/enroll"
+                              onsubmit="return confirm('Đăng ký khóa học này?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseId" value="@c.Courseid" />
+                            <button class="btn btn-brand" type="submit">
+                                <i class="fas fa-user-plus"></i> Đăng ký khóa học
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

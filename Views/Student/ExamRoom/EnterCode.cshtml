@@ -1,0 +1,25 @@
+﻿@model OMS.Models.ViewModels.Student.EnterCodeVm
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="/student/examroom/entercode">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        <label>Access Code</label>
+                        <input asp-for="Code" class="form-control text-uppercase" placeholder="VD: ABC123" />
+                        <span class="text-danger" asp-validation-for="Code"></span>
+                    </div>
+
+                    <div class="mt-4 text-right">
+                        <button class="btn btn-brand" type="submit">
+                            <i class="fas fa-arrow-right"></i> Tiếp tục
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

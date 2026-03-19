@@ -1,0 +1,183 @@
+﻿@using System.Security.Claims
+@{
+    var isAuth = User?.Identity?.IsAuthenticated ?? false;
+    var fullName = isAuth ? (User.FindFirst("FullName")?.Value ?? User.Identity?.Name) : "Guest";
+    var role = isAuth ? (User.FindFirst(ClaimTypes.Role)?.Value ?? "") : "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OMS</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=fallback">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.3/css/OverlayScrollbars.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.13.8/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item mr-2">
+                    <span class="nav-link">
+                        <i class="fa-solid fa-user"></i> @fullName
+                        @if (!string.IsNullOrWhiteSpace(role))
+                        {
+                            <span class="badge badge-info ml-2 text-uppercase">@role</span>
+                        }
+                    </span>
+                </li>
+
+                <li class="nav-item">
+                    @if (isAuth)
+                    {
+                        <form method="post" action="/Auth/Logout" class="mb-0">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-outline-primary" href="/Auth/Login">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    }
+                </li>
+            </ul>
+        </nav>
+
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <a href="/" class="brand-link">
+                <span class="brand-text font-weight-bold ml-2">Online Exam</span>
+            </a>
+
+            <div class="sidebar">
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="https://ui-avatars.com/api/?name=@fullName&background=2563eb&color=fff"
+                             class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block">@fullName</a>
+                        <small class="text-muted">@(!string.IsNullOrWhiteSpace(role) ? role.ToUpper() : "")</small>
+                    </div>
+                </div>
+
+                <nav class="mt-2">
+                    <partial name="_Sidebar" />
+                </nav>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-end justify-content-between flex-wrap">
+                        <div>
+                            <div>
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <h1 class="m-0 mr-2">
+                                        <i class="fas fa-layer-group text-primary mr-2"></i>
+                                        @ViewData["Title"]
+                                    </h1>
+
+                                    @if (ViewData["Badge"] != null)
+                                    {
+                                        <span class="badge badge-info">@ViewData["Badge"]</span>
+                                    }
+                                </div>
+
+                                @if (ViewData["SubTitle"] != null)
+                                {
+                                    <div class="page-title-sub mt-1">
+                                        <i class="fas fa-circle-info mr-1"></i> @ViewData["SubTitle"]
+                                    </div>
+                                }
+
+                                @if (ViewData["Breadcrumb"] != null)
+                                {
+                                    <div class="text-muted mt-1" style="font-size:.92rem;">
+                                        <i class="fas fa-chevron-right mr-1"></i> @ViewData["Breadcrumb"]
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2 mt-sm-0">
+                            @RenderSection("PageActions", required: false)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </section>
+        </div>
+
+        <footer class="main-footer">
+            <strong>OMS</strong>
+            <div class="float-right d-none d-sm-inline-block"><b>v1.0</b></div>
+        </footer>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.3/js/jquery.overlayScrollbars.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.0/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(function () {
+            $('.sidebar').overlayScrollbars({});
+            toastr.options = {
+                "positionClass": "toast-top-right",
+                "timeOut": "2500",
+                "closeButton": true,
+                "progressBar": true
+            };
+        });
+
+        const success = '@TempData["Success"]';
+        const error = '@TempData["Error"]';
+        if (success) toastr.success(success);
+        if (error) toastr.error(error);
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

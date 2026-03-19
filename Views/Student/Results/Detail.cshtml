@@ -1,0 +1,44 @@
+﻿@model dynamic
+
+@section PageActions {
+    <a class="btn btn-outline-secondary" href="/student/results/my">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+
+    @if (Model.Allowreview == true)
+    {
+        <a class="btn btn-brand ml-2" href="/student/review/detail?attemptId=@Model.Attemptid">
+            <i class="fas fa-book-open"></i> Review bài thi
+        </a>
+    }
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="badge badge-info">@Model.CourseName</span>
+            <span class="badge badge-dark ml-2">@Model.ExamTitle</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p><b>Status:</b> @Model.Status</p>
+                <p><b>Start:</b> @Model.Starttime.ToString("yyyy-MM-dd HH:mm")</p>
+                <p><b>Submit:</b> @(Model.Submittime != null ? ((DateTime)Model.Submittime).ToString("yyyy-MM-dd HH:mm") : "-")</p>
+            </div>
+
+            <div class="col-md-6">
+                <p><b>Total score:</b> @(Model.Totalscore?.ToString("0.##") ?? "-")</p>
+                <p><b>Final score:</b> @(Model.Finalscore?.ToString("0.##") ?? "-")</p>
+                <p><b>Graded at:</b> @(Model.Gradedat != null ? ((DateTime)Model.Gradedat).ToString("yyyy-MM-dd HH:mm") : "-")</p>
+            </div>
+        </div>
+
+        @if (Model.Allowreview != true)
+        {
+            <div class="alert alert-warning mb-0">
+                Giáo viên chưa bật quyền review đáp án cho bài thi này.
+            </div>
+        }
+    </div>
+</div>

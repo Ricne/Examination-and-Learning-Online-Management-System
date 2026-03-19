@@ -1,0 +1,77 @@
+﻿@model dynamic
+
+@section PageActions {
+    <a class="btn btn-outline-secondary" href="/student/lessons/index?courseId=@Model.Courseid">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="mb-2">
+            <span class="badge badge-info">@Model.CourseName</span>
+            <span class="badge badge-dark ml-2">Lesson @Model.Lessonorder</span>
+            @if (Model.IsCompleted)
+            {
+                <span class="badge badge-success ml-2">Completed</span>
+            }
+        </div>
+
+        <h4>@Model.Title</h4>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace((string?)Model.Videourl))
+{
+    <div class="card mb-3">
+        <div class="card-header"><b>Video</b></div>
+        <div class="card-body">
+            <a href="@Model.Videourl" target="_blank" class="btn btn-outline-danger">
+                <i class="fas fa-video"></i> Mở video bài giảng
+            </a>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace((string?)Model.Attachmenturl))
+{
+    <div class="card mb-3">
+        <div class="card-header"><b>Tài liệu đính kèm</b></div>
+        <div class="card-body">
+            <a href="@Model.Attachmenturl" target="_blank" class="btn btn-outline-primary">
+                <i class="fas fa-file-pdf"></i> Mở tài liệu
+            </a>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace((string?)Model.Content))
+{
+    <div class="card mb-3">
+        <div class="card-header"><b>Nội dung bài giảng</b></div>
+        <div class="card-body" style="white-space:pre-wrap;">
+            @Model.Content
+        </div>
+    </div>
+}
+
+@if (!Model.IsCompleted)
+{
+    <div class="card">
+        <div class="card-body text-right">
+            <form method="post" action="/student/lessons/markcomplete">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="lessonId" value="@Model.Lessonid" />
+                <button class="btn btn-success" type="submit">
+                    <i class="fas fa-check-circle"></i> Đánh dấu hoàn thành
+                </button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-success">
+        Bạn đã hoàn thành bài học này.
+    </div>
+}

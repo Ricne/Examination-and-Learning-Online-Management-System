@@ -1,0 +1,115 @@
+﻿@model List<OMS.Models.Entities.User>
+
+@section PageActions {
+    <a class="btn btn-brand" href="/admin/users/create">
+        <i class="fas fa-plus"></i> Tạo user
+    </a>
+}
+
+<div class="card">
+    <div class="card-body">
+        <table id="usersTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th style="width:70px;">Avatar</th>
+                    <th>Username</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th style="width:120px;">Role</th>
+                    <th style="width:110px;">Active</th>
+                    <th style="width:220px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    var avatar = string.IsNullOrWhiteSpace(u.Avatarurl)
+                    ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(u.Fullname ?? u.Username)}&background=2563eb&color=fff"
+                    : u.Avatarurl;
+
+                    <tr>
+                        <td>@u.Userid</td>
+                        <td>
+                            <img src="@avatar" style="width:42px;height:42px;border-radius:12px;object-fit:cover;border:1px solid rgba(0,0,0,.08);" />
+                        </td>
+                        <td><b>@u.Username</b></td>
+                        <td>@u.Fullname</td>
+                        <td class="text-muted">@u.Email</td>
+                        <td><span class="badge badge-info text-uppercase">@u.Role?.Rolename</span></td>
+                        <td>
+                            @if (u.Isactive == true)
+                            {
+                                <span class="badge badge-success">ON</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">OFF</span>
+                            }
+                        </td>
+                        <td>
+                            <form class="d-inline" method="post" action="/admin/users/toggleactive?id=@u.Userid"
+                                  data-name="@u.Username" data-action="toggle">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-@(u.Isactive==true ? "secondary" : "success")"
+                                        type="submit" title="@(u.Isactive==true ? "Tắt" : "Bật")">
+                                    <i class="fas fa-@(u.Isactive==true ? "toggle-off" : "toggle-on")"></i>
+                                </button>
+                            </form>
+
+                            <a class="btn btn-sm btn-warning ml-1" href="/admin/users/edit?id=@u.Userid" title="Edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <form class="d-inline" method="post" action="/admin/users/delete?id=@u.Userid"
+                                  data-name="@u.Username" data-action="delete">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-danger ml-1" type="submit" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#usersTable').DataTable({
+                pageLength: 10,
+                order: [[0, 'desc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: { previous: "Trước", next: "Sau" }
+                }
+            });
+
+            $('form[data-action]').on('submit', async function (e) {
+                e.preventDefault();
+                const name = $(this).data('name');
+                const action = $(this).data('action');
+
+                let title = "Xác nhận";
+                let text = `Bạn muốn thực hiện thao tác với "${name}"?`;
+
+                if (action === "toggle") {
+                    title = "Bật/Tắt tài khoản?";
+                    text = `Bạn muốn đổi trạng thái Active của "${name}"?`;
+                }
+                if (action === "delete") {
+                    title = "Xóa user?";
+                    text = `Xóa "${name}" sẽ mất dữ liệu tài khoản. Nếu user đang liên kết dữ liệu, hệ thống sẽ chặn và bạn nên TẮT tài khoản.`;
+                }
+
+                const ok = await confirmAction(title, text);
+                if (ok) this.submit();
+            });
+        });
+    </script>
+}

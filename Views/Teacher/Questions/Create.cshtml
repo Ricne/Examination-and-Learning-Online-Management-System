@@ -1,0 +1,150 @@
+﻿@model OMS.Models.ViewModels.Teacher.QuestionEditVm
+@{
+    var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course> ?? Array.Empty<OMS.Models.Entities.Course>();
+}
+
+@section PageActions {
+    <a class="btn btn-outline-primary" href="/teacher/questions/import">
+        <i class="fas fa-file-excel"></i> Import Excel
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="/teacher/questions/create">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        <label>Khóa học</label>
+                        <select asp-for="Courseid" class="form-control select2">
+                            <option value="">-- Chọn khóa học --</option>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.Courseid">@c.Coursename</option>
+                            }
+                        </select>
+                        <span class="text-danger" asp-validation-for="Courseid"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <select asp-for="Questiontype" class="form-control" id="qType">
+                            <option value="mcq">MCQ</option>
+                            <option value="true_false">True/False</option>
+                            <option value="essay">Essay</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Questiontype"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nội dung câu hỏi</label>
+                        <textarea asp-for="Questioncontent" class="form-control" rows="5"></textarea>
+                        <span class="text-danger" asp-validation-for="Questioncontent"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Marks</label>
+                        <input asp-for="Marks" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Marks"></span>
+                    </div>
+
+                    <div id="mcqBlock" style="display:none;">
+                        <hr />
+                        <h6 class="mb-3"><i class="fas fa-list-check"></i> Choices (MCQ)</h6>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Choice A</label>
+                                <input asp-for="ChoiceA" class="form-control" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Choice B</label>
+                                <input asp-for="ChoiceB" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Choice C</label>
+                                <input asp-for="ChoiceC" class="form-control" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Choice D</label>
+                                <input asp-for="ChoiceD" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Correct</label>
+                            <select asp-for="Correct" class="form-control">
+                                <option value="">-- Chọn đáp án đúng --</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="Correct"></span>
+                        </div>
+                    </div>
+
+                    <div id="tfBlock" style="display:none;">
+                        <hr />
+                        <h6 class="mb-3"><i class="fas fa-toggle-on"></i> Correct (True/False)</h6>
+
+                        <div class="form-group">
+                            <label>Correct</label>
+                            <select asp-for="Correct" class="form-control">
+                                <option value="">-- Chọn đáp án đúng --</option>
+                                <option value="TRUE">TRUE</option>
+                                <option value="FALSE">FALSE</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="Correct"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button class="btn btn-brand" type="submit">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <a class="btn btn-outline-secondary ml-2" href="/teacher/questions/index">
+                            Back
+                        </a>
+                    </div>
+
+                    <div class="text-danger mt-3">
+                        @Html.ValidationSummary()
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <b>Tip</b>
+                <div class="text-muted mt-2">
+                    Nếu bạn có nhiều câu hỏi, dùng Import Excel sẽ nhanh hơn. Sau khi import vẫn sửa lại được từng câu.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleBlocks(){
+            const t = $('#qType').val();
+            $('#mcqBlock').toggle(t === 'mcq');
+            $('#tfBlock').toggle(t === 'true_false');
+        }
+
+        $(function(){
+            $('.select2').select2({ width:'100%' });
+            toggleBlocks();
+            $('#qType').on('change', toggleBlocks);
+        });
+    </script>
+}

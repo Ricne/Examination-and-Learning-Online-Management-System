@@ -1,0 +1,143 @@
+﻿@model List<OMS.Models.Entities.Question>
+
+@{
+    var courses = ViewBag.Courses as IEnumerable<OMS.Models.Entities.Course>
+                  ?? Array.Empty<OMS.Models.Entities.Course>();
+    int? courseId = ViewBag.CourseId as int?;
+}
+
+@section PageActions {
+    <a class="btn btn-brand" href="/teacher/questions/create">
+        <i class="fas fa-plus"></i> Tạo thủ công
+    </a>
+
+    <a class="btn btn-outline-primary ml-2" href="/teacher/questions/import">
+        <i class="fas fa-file-excel"></i> Import Excel
+    </a>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" action="/teacher/questions/index" class="row">
+            <div class="col-md-6">
+                <label>Chọn khóa học</label>
+                <select class="form-control select2" name="courseId">
+                    <option value="">-- Tất cả khóa học --</option>
+                    @foreach (var c in courses)
+                    {
+                        <option value="@c.Courseid" selected="@(courseId == c.Courseid)">
+                            @c.Coursename
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-outline-primary w-100" type="submit">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table id="qTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Nội dung</th>
+                    <th style="width:140px;">Type</th>
+                    <th style="width:120px;">Marks</th>
+                    <th style="width:220px;">Course</th>
+                    <th style="width:160px;">Created</th>
+                    <th style="width:170px;">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var q in Model)
+                {
+                    <tr>
+                        <td>@q.Questionid</td>
+
+                        <td style="max-width:560px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                            <b>@q.Questioncontent</b>
+                        </td>
+
+                        <td>
+                            <span class="badge badge-info text-uppercase">
+                                @q.Questiontype
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge badge-dark">
+                                @q.Marks
+                            </span>
+                        </td>
+
+                        <td>@q.Course?.Coursename</td>
+
+                        <td class="text-muted">
+                            @q.Createdat.ToString("yyyy-MM-dd HH:mm")
+                        </td>
+
+                        <td class="text-right">
+
+                            <a class="btn btn-sm btn-outline-info"
+                               href="/teacher/questions/detail?id=@q.Questionid">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a class="btn btn-sm btn-outline-primary ml-1"
+                               href="/teacher/questions/edit?id=@q.Questionid">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <form method="post"
+                                  action="/teacher/questions/delete"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Xóa câu hỏi này?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@q.Questionid" />
+                                <button class="btn btn-sm btn-outline-danger ml-1" type="submit">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('.select2').select2({
+                width: '100%'
+            });
+
+            $('#qTable').DataTable({
+                pageLength: 10,
+                order: [[0, 'desc']],
+                language: {
+                    search: "Tìm:",
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    info: "Trang _PAGE_ / _PAGES_ (Tổng _TOTAL_)",
+                    paginate: {
+                        previous: "Trước",
+                        next: "Sau"
+                    }
+                }
+            });
+
+        });
+    </script>
+}
