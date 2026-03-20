@@ -102,6 +102,12 @@ public class ExamsController : Controller
             return View("~/Views/Teacher/Exams/Create.cshtml", vm);
         }
 
+        if (vm.Ispublished)
+        {
+            ModelState.AddModelError(nameof(vm.Ispublished), "Chưa thể publish đề thi khi chưa thêm câu hỏi. Hãy tạo đề trước, thêm câu hỏi rồi publish sau.");
+            return View("~/Views/Teacher/Exams/Create.cshtml", vm);
+        }
+
         var exam = new Exam
         {
             Courseid = vm.Courseid,
@@ -111,7 +117,7 @@ public class ExamsController : Controller
             Endtime = vm.Endtime,
             Totalmarks = 0,
             Maxattempts = vm.Maxattempts,
-            Ispublished = vm.Ispublished,
+            Ispublished = false, 
             Allowreview = vm.Allowreview,
             Createdby = teacherId,
             Createdat = DateTime.Now,
@@ -122,8 +128,8 @@ public class ExamsController : Controller
         _db.Exams.Add(exam);
         await _db.SaveChangesAsync();
 
-        TempData["Success"] = "Tạo đề thi thành công.";
-        return RedirectToAction(nameof(Index));
+        TempData["Success"] = "Tạo đề thi thành công. Hãy thêm câu hỏi trước khi publish.";
+        return Redirect($"/teacher/exambuilder/index?examId={exam.Examid}");
     }
 
     [HttpGet]
@@ -187,6 +193,17 @@ public class ExamsController : Controller
             return View("~/Views/Teacher/Exams/Edit.cshtml", vm);
         }
 
+        var questionCount = await _db.Exams
+            .Where(e => e.Examid == vm.Examid)
+            .SelectMany(e => e.Questions)
+            .CountAsync();
+
+        if (vm.Ispublished && questionCount == 0)
+        {
+            ModelState.AddModelError(nameof(vm.Ispublished), "Không thể publish đề thi khi chưa có câu hỏi.");
+            return View("~/Views/Teacher/Exams/Edit.cshtml", vm);
+        }
+
         exam.Courseid = vm.Courseid;
         exam.Title = vm.Title.Trim();
         exam.Durationminutes = vm.Durationminutes;
@@ -196,10 +213,18 @@ public class ExamsController : Controller
         exam.Ispublished = vm.Ispublished;
         exam.Allowreview = vm.Allowreview;
 
-        await _db.SaveChangesAsync();
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            ModelState.AddModelError("", "Không thể cập nhật đề thi. Nếu muốn publish, hãy chắc chắn đề đã có câu hỏi và tổng điểm > 0.");
+            return View("~/Views/Teacher/Exams/Edit.cshtml", vm);
+        }
 
         TempData["Success"] = "Cập nhật đề thi thành công.";
-        return RedirectToAction(nameof(Index));
+        return Redirect("/teacher/exams/index");
     }
 
     [HttpPost]
@@ -210,11 +235,34 @@ public class ExamsController : Controller
         var exam = await GetTeacherExam(teacherId, id);
         if (exam == null) return NotFound();
 
+        if (!exam.Ispublished)
+        {
+            var questionCount = await _db.Exams
+                .Where(e => e.Examid == id)
+                .SelectMany(e => e.Questions)
+                .CountAsync();
+
+            if (questionCount == 0 || exam.Totalmarks <= 0)
+            {
+                TempData["Error"] = "Không thể publish đề thi khi chưa có câu hỏi hoặc tổng điểm chưa hợp lệ.";
+                return Redirect("/teacher/exams/index");
+            }
+        }
+
         exam.Ispublished = !exam.Ispublished;
-        await _db.SaveChangesAsync();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            TempData["Error"] = "Không thể thay đổi trạng thái publish. Hãy kiểm tra đề đã có câu hỏi và tổng điểm > 0.";
+            return Redirect("/teacher/exams/index");
+        }
 
         TempData["Success"] = exam.Ispublished ? "Đã publish đề thi." : "Đã unpublish đề thi.";
-        return RedirectToAction(nameof(Index));
+        return Redirect("/teacher/exams/index");
     }
 
     [HttpPost]

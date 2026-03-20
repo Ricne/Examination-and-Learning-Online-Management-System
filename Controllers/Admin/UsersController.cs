@@ -181,7 +181,7 @@ public class UsersController : Controller
             Email = user.Email,
             RoleId = user.Roleid,
             AvatarUrl = user.Avatarurl,
-            IsActive = user.Isactive = !user.Isactive
+            IsActive = user.Isactive
         };
 
         return View("~/Views/Admin/Users/Edit.cshtml", vm);
@@ -258,11 +258,14 @@ public class UsersController : Controller
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Userid == id);
         if (user == null) return NotFound();
 
-        user.Isactive = !(user.Isactive = !user.Isactive);
+        user.Isactive = !user.Isactive;
         await _db.SaveChangesAsync();
 
-        TempData["Success"] = user.Isactive == true ? "Đã bật tài khoản." : "Đã tắt tài khoản.";
-        return RedirectToAction(nameof(Index));
+        TempData["Success"] = user.Isactive
+            ? "Đã bật tài khoản."
+            : "Đã tắt tài khoản.";
+
+        return Redirect("/admin/users/index");
     }
 
     [HttpPost]
