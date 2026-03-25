@@ -84,7 +84,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("Deletedat")
                         .HasColumnType("TEXT")
@@ -138,7 +138,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("enrolledat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Courseid", "Studentid")
                         .HasName("PK__coursest__7E7A26EFA1FDA1A7");
@@ -167,7 +167,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Createdby")
                         .HasColumnType("INTEGER")
@@ -261,7 +261,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Createdby")
                         .HasColumnType("INTEGER")
@@ -321,7 +321,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("starttime")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -382,7 +382,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("gradedat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Gradedby")
                         .HasColumnType("INTEGER")
@@ -423,7 +423,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("Deletedat")
                         .HasColumnType("TEXT")
@@ -506,7 +506,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Createdby")
                         .HasColumnType("INTEGER")
@@ -561,7 +561,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Createdbyip")
                         .HasMaxLength(45)
@@ -697,7 +697,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("Deletedat")
                         .HasColumnType("TEXT")
@@ -751,7 +751,7 @@ namespace OMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("(sysdatetime())");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Email")
                         .IsRequired()

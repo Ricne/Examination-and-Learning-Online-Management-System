@@ -35,7 +35,7 @@ namespace OMS.Migrations
                     isactive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
                     isdeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     deletedat = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -55,7 +55,7 @@ namespace OMS.Migrations
                     roleid = table.Column<int>(type: "INTEGER", nullable: false),
                     avatarurl = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     isactive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -80,7 +80,7 @@ namespace OMS.Migrations
                     isactive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
                     isdeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     deletedat = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -106,7 +106,7 @@ namespace OMS.Migrations
                     userid = table.Column<int>(type: "INTEGER", nullable: false),
                     token = table.Column<string>(type: "TEXT", maxLength: 400, nullable: false),
                     jwtid = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())"),
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     expiresat = table.Column<DateTime>(type: "TEXT", nullable: false),
                     revokedat = table.Column<DateTime>(type: "TEXT", nullable: true),
                     replacedbytoken = table.Column<string>(type: "TEXT", maxLength: 400, nullable: true),
@@ -131,7 +131,7 @@ namespace OMS.Migrations
                 {
                     courseid = table.Column<int>(type: "INTEGER", nullable: false),
                     studentid = table.Column<int>(type: "INTEGER", nullable: false),
-                    enrolledat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    enrolledat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -171,7 +171,7 @@ namespace OMS.Migrations
                     isdeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     deletedat = table.Column<DateTime>(type: "TEXT", nullable: true),
                     createdby = table.Column<int>(type: "INTEGER", nullable: false),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -204,7 +204,7 @@ namespace OMS.Migrations
                     ispublished = table.Column<bool>(type: "INTEGER", nullable: false),
                     isdeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     deletedat = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -230,7 +230,7 @@ namespace OMS.Migrations
                     createdby = table.Column<int>(type: "INTEGER", nullable: false),
                     isdeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     deletedat = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -257,7 +257,7 @@ namespace OMS.Migrations
                     examid = table.Column<int>(type: "INTEGER", nullable: false),
                     accesscode = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     createdby = table.Column<int>(type: "INTEGER", nullable: false),
-                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())"),
+                    createdat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     expiresat = table.Column<DateTime>(type: "TEXT", nullable: true),
                     isactive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
                     maxuses = table.Column<int>(type: "INTEGER", nullable: true),
@@ -287,7 +287,7 @@ namespace OMS.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     examid = table.Column<int>(type: "INTEGER", nullable: false),
                     studentid = table.Column<int>(type: "INTEGER", nullable: false),
-                    starttime = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())"),
+                    starttime = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     submittime = table.Column<DateTime>(type: "TEXT", nullable: true),
                     totalscore = table.Column<decimal>(type: "decimal(7, 2)", nullable: true),
                     status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false, defaultValue: "inprogress"),
@@ -389,7 +389,7 @@ namespace OMS.Migrations
                     attemptid = table.Column<int>(type: "INTEGER", nullable: false),
                     finalscore = table.Column<decimal>(type: "decimal(7, 2)", nullable: false),
                     gradedby = table.Column<int>(type: "INTEGER", nullable: false),
-                    gradedat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "(sysdatetime())")
+                    gradedat = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
