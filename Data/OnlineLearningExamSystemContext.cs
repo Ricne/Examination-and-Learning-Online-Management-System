@@ -64,7 +64,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Courseid).HasName("PK__courses__2AAB4BC9471B9734");
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.Isactive).HasDefaultValue(true);
 
             entity.HasOne(d => d.Subject).WithMany(p => p.Courses)
@@ -80,7 +80,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => new { e.Courseid, e.Studentid }).HasName("PK__coursest__7E7A26EFA1FDA1A7");
 
-            entity.Property(e => e.Enrolledat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Enrolledat).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Coursestudents).HasConstraintName("fk_cs_course");
 
@@ -93,7 +93,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
 
             entity.ToTable("exams", tb => tb.HasTrigger("trg_exams_publish_validate"));
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.Maxattempts).HasDefaultValue(1);
 
             entity.HasOne(d => d.Course).WithMany(p => p.Exams).HasConstraintName("fk_exams_course");
@@ -126,7 +126,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Codeid).HasName("PK__examacce__47F9C38CABBE8D99");
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.Isactive).HasDefaultValue(true);
 
             entity.HasOne(d => d.CreatedbyNavigation).WithMany(p => p.Examaccesscodes)
@@ -142,7 +142,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
 
             entity.ToTable("examattempts", tb => tb.HasTrigger("trg_examattempts_enforce_maxattempts"));
 
-            entity.Property(e => e.Starttime).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Starttime).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.Status).HasDefaultValue("inprogress");
 
             entity.HasOne(d => d.Exam).WithMany(p => p.Examattempts).HasConstraintName("fk_attempt_exam");
@@ -154,7 +154,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Resultid).HasName("PK__examresu__C6EBD0433EC3794D");
 
-            entity.Property(e => e.Gradedat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Gradedat).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Attempt).WithOne(p => p.Examresult).HasConstraintName("fk_result_attempt");
 
@@ -167,7 +167,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Lessonid).HasName("PK__lessons__F88B935051A31C27");
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Lessons).HasConstraintName("fk_lessons_course");
         });
@@ -187,7 +187,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
 
             entity.ToTable("questions", tb => tb.HasTrigger("trg_questions_update_totalmarks"));
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Questions).HasConstraintName("fk_questions_course");
 
@@ -200,7 +200,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Tokenid).HasName("PK__refresht__AC17DF2F2CE6675E");
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.User).WithMany(p => p.Refreshtokens).HasConstraintName("fk_refreshtokens_user");
         });
@@ -229,7 +229,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Subjectid).HasName("PK__subjects__ACE1437884B53055");
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP"); 
             entity.Property(e => e.Isactive).HasDefaultValue(true);
         });
 
@@ -237,7 +237,7 @@ public partial class OnlineLearningExamSystemContext : DbContext
         {
             entity.HasKey(e => e.Userid).HasName("PK__users__CBA1B25799860EF1");
 
-            entity.Property(e => e.Createdat).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.Createdat).HasDefaultValueSql("CURRENT_TIMESTAMP"); 
             entity.Property(e => e.Isactive).HasDefaultValue(true);
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)

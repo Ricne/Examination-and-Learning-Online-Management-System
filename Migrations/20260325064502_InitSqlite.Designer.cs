@@ -11,7 +11,7 @@ using OMS.Data;
 namespace OMS.Migrations
 {
     [DbContext(typeof(OnlineLearningExamSystemContext))]
-    [Migration("20260325061410_InitSqlite")]
+    [Migration("20260325064502_InitSqlite")]
     partial class InitSqlite
     {
         /// <inheritdoc />
