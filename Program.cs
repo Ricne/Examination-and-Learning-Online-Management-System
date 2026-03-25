@@ -27,6 +27,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<OMS.Data.OnlineLearningExamSystemContext>();
+
+    db.Database.Migrate();
+
     await OMS.Data.Seed.DbSeeder.SeedAsync(db);
 }
 
