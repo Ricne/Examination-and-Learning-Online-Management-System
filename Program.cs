@@ -1,25 +1,42 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OMS.Data;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string connectionString;
+
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-if (string.IsNullOrEmpty(databaseUrl))
+if (!string.IsNullOrEmpty(databaseUrl))
 {
-    throw new Exception("DATABASE_URL not set!");
+    var databaseUri = new Uri(databaseUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+
+    var builderNpgsql = new NpgsqlConnectionStringBuilder()
+    {
+        Host = databaseUri.Host,
+        Port = databaseUri.Port > 0 ? databaseUri.Port : 5432, 
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = databaseUri.AbsolutePath.TrimStart('/'),
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true,
+        Pooling = true
+    };
+
+    connectionString = builderNpgsql.ToString();
 }
-
-var databaseUri = new Uri(databaseUrl);
-var userInfo = databaseUri.UserInfo.Split(':');
-
-var connStr = $"Host={databaseUri.Host};Port={databaseUri.Port};Username={userInfo[0]};Password={userInfo[1]};Database={databaseUri.LocalPath.TrimStart('/')};Pooling=true;SSL Mode=Require;Trust Server Certificate=true;";
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<OnlineLearningExamSystemContext>(options =>
-    options.UseNpgsql(connStr)
+    options.UseNpgsql(connectionString)
 );
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -40,7 +57,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<OnlineLearningExamSystemContext>();
 
-    db.Database.Migrate(); 
+    db.Database.Migrate();
 
     await OMS.Data.Seed.DbSeeder.SeedAsync(db);
 }
@@ -61,6 +78,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();
