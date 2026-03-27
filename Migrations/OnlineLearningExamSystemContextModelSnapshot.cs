@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OMS.Data;
 
 #nullable disable
@@ -15,52 +16,53 @@ namespace OMS.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Examquestion", b =>
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ExamQuestion", b =>
                 {
                     b.Property<int>("Examid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("examid");
 
                     b.Property<int>("Questionid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("questionid");
 
-                    b.HasKey("Examid", "Questionid")
-                        .HasName("PK__examques__13400C718E31CCD8");
+                    b.HasKey("Examid", "Questionid");
 
-                    b.HasIndex(new[] { "Questionid" }, "ix_examquestions_questionid");
+                    b.HasIndex("Questionid");
 
-                    b.ToTable("examquestions", null, t =>
-                        {
-                            t.HasTrigger("trg_examquestions_update_totalmarks");
-                        });
+                    b.ToTable("examquestion");
                 });
 
             modelBuilder.Entity("OMS.Models.Entities.Choice", b =>
                 {
                     b.Property<int>("Choiceid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("choiceid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Choiceid"));
 
                     b.Property<string>("Choicetext")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("choicetext");
 
                     b.Property<bool>("Iscorrect")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("iscorrect");
 
                     b.Property<int>("Questionid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("questionid");
 
-                    b.HasKey("Choiceid")
-                        .HasName("PK__choices__16C8B75F6987F2BB");
+                    b.HasKey("Choiceid");
 
                     b.HasIndex(new[] { "Questionid" }, "ix_choices_questionid");
 
@@ -71,49 +73,50 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Courseid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("courseid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Courseid"));
 
                     b.Property<string>("Coursename")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("coursename");
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("Deletedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletedat");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("text")
                         .HasColumnName("description");
 
                     b.Property<bool>("Isactive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("isactive");
 
                     b.Property<bool>("Isdeleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("isdeleted");
 
                     b.Property<int>("Subjectid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("subjectid");
 
                     b.Property<int>("Teacherid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("teacherid");
 
-                    b.HasKey("Courseid")
-                        .HasName("PK__courses__2AAB4BC9471B9734");
+                    b.HasKey("Courseid");
 
                     b.HasIndex(new[] { "Isdeleted" }, "ix_courses_isdeleted");
 
@@ -127,21 +130,20 @@ namespace OMS.Migrations
             modelBuilder.Entity("OMS.Models.Entities.Coursestudent", b =>
                 {
                     b.Property<int>("Courseid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("courseid");
 
                     b.Property<int>("Studentid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("studentid");
 
                     b.Property<DateTime>("Enrolledat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("enrolledat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasKey("Courseid", "Studentid")
-                        .HasName("PK__coursest__7E7A26EFA1FDA1A7");
+                    b.HasKey("Courseid", "Studentid");
 
                     b.HasIndex(new[] { "Studentid" }, "ix_cs_studentid");
 
@@ -152,81 +154,82 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Examid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("examid");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Examid"));
+
                     b.Property<bool>("Allowreview")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("allowreview");
 
                     b.Property<int>("Courseid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("courseid");
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Createdby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("createdby");
 
                     b.Property<DateTime?>("Deletedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletedat");
 
                     b.Property<int>("Durationminutes")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("durationminutes");
 
                     b.Property<DateTime?>("Endtime")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("endtime");
 
                     b.Property<bool>("Isdeleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("isdeleted");
 
                     b.Property<bool>("Ispublished")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("ispublished");
 
                     b.Property<int>("Maxattempts")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasDefaultValue(1)
                         .HasColumnName("maxattempts");
 
                     b.Property<bool>("Requireaccesscode")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("requireaccesscode");
 
                     b.Property<DateTime?>("Reviewavailablefrom")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("reviewavailablefrom");
 
                     b.Property<DateTime?>("Reviewavailableto")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("reviewavailableto");
 
                     b.Property<DateTime?>("Starttime")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("starttime");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("title");
 
                     b.Property<decimal>("Totalmarks")
                         .HasColumnType("decimal(7, 2)")
                         .HasColumnName("totalmarks");
 
-                    b.HasKey("Examid")
-                        .HasName("PK__exams__A56C2E67A94BE1C6");
+                    b.HasKey("Examid");
 
                     b.HasIndex("Createdby");
 
@@ -238,59 +241,57 @@ namespace OMS.Migrations
 
                     b.HasIndex(new[] { "Requireaccesscode" }, "ix_exams_requireaccesscode");
 
-                    b.ToTable("exams", null, t =>
-                        {
-                            t.HasTrigger("trg_exams_publish_validate");
-                        });
+                    b.ToTable("exams");
                 });
 
             modelBuilder.Entity("OMS.Models.Entities.Examaccesscode", b =>
                 {
                     b.Property<int>("Codeid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("codeid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Codeid"));
 
                     b.Property<string>("Accesscode")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("accesscode");
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Createdby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("createdby");
 
                     b.Property<int>("Examid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("examid");
 
                     b.Property<DateTime?>("Expiresat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("expiresat");
 
                     b.Property<bool>("Isactive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("isactive");
 
                     b.Property<int?>("Maxuses")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("maxuses");
 
                     b.Property<int>("Usedcount")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("usedcount");
 
-                    b.HasKey("Codeid")
-                        .HasName("PK__examacce__47F9C38CABBE8D99");
+                    b.HasKey("Codeid");
 
                     b.HasIndex("Createdby");
 
@@ -310,16 +311,18 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Attemptid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("attemptid");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Attemptid"));
+
                     b.Property<int>("Examid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("examid");
 
                     b.Property<DateTime>("Starttime")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("starttime")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
@@ -327,16 +330,16 @@ namespace OMS.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(20)")
                         .HasDefaultValue("inprogress")
                         .HasColumnName("status");
 
                     b.Property<int>("Studentid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("studentid");
 
                     b.Property<DateTime?>("Submittime")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("submittime");
 
                     b.Property<decimal?>("Totalscore")
@@ -345,11 +348,10 @@ namespace OMS.Migrations
 
                     b.Property<string>("Usedaccesscode")
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("usedaccesscode");
 
-                    b.HasKey("Attemptid")
-                        .HasName("PK__examatte__93079C1E5CEF0DC2");
+                    b.HasKey("Attemptid");
 
                     b.HasIndex(new[] { "Examid" }, "ix_attempt_examid");
 
@@ -357,21 +359,20 @@ namespace OMS.Migrations
 
                     b.HasIndex(new[] { "Studentid" }, "ix_attempt_studentid");
 
-                    b.ToTable("examattempts", null, t =>
-                        {
-                            t.HasTrigger("trg_examattempts_enforce_maxattempts");
-                        });
+                    b.ToTable("examattempts");
                 });
 
             modelBuilder.Entity("OMS.Models.Entities.Examresult", b =>
                 {
                     b.Property<int>("Resultid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("resultid");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Resultid"));
+
                     b.Property<int>("Attemptid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("attemptid");
 
                     b.Property<decimal>("Finalscore")
@@ -380,16 +381,15 @@ namespace OMS.Migrations
 
                     b.Property<DateTime>("Gradedat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("gradedat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Gradedby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("gradedby");
 
-                    b.HasKey("Resultid")
-                        .HasName("PK__examresu__C6EBD0433EC3794D");
+                    b.HasKey("Resultid");
 
                     b.HasIndex(new[] { "Attemptid" }, "UQ__examresu__93079C1F09A332B6")
                         .IsUnique();
@@ -403,57 +403,58 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Lessonid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("lessonid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Lessonid"));
 
                     b.Property<string>("Attachmenturl")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("attachmenturl");
 
                     b.Property<string>("Content")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("text")
                         .HasColumnName("content");
 
                     b.Property<int>("Courseid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("courseid");
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("Deletedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletedat");
 
                     b.Property<bool>("Isdeleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("isdeleted");
 
                     b.Property<bool>("Ispublished")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("ispublished");
 
                     b.Property<int>("Lessonorder")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("lessonorder");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("title");
 
                     b.Property<string>("Videourl")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("videourl");
 
-                    b.HasKey("Lessonid")
-                        .HasName("PK__lessons__F88B935051A31C27");
+                    b.HasKey("Lessonid");
 
                     b.HasIndex(new[] { "Courseid" }, "ix_lessons_courseid");
 
@@ -468,23 +469,22 @@ namespace OMS.Migrations
             modelBuilder.Entity("OMS.Models.Entities.Lessonprogress", b =>
                 {
                     b.Property<int>("Lessonid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("lessonid");
 
                     b.Property<int>("Studentid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("studentid");
 
                     b.Property<DateTime?>("Completedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("completedat");
 
                     b.Property<bool>("Iscompleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("iscompleted");
 
-                    b.HasKey("Lessonid", "Studentid")
-                        .HasName("PK__lessonpr__AC5AFE76518F04CF");
+                    b.HasKey("Lessonid", "Studentid");
 
                     b.HasIndex(new[] { "Studentid" }, "ix_lp_studentid");
 
@@ -495,29 +495,31 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Questionid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("questionid");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Questionid"));
+
                     b.Property<int>("Courseid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("courseid");
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Createdby")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("createdby");
 
                     b.Property<DateTime?>("Deletedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletedat");
 
                     b.Property<bool>("Isdeleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("isdeleted");
 
                     b.Property<decimal>("Marks")
@@ -526,17 +528,16 @@ namespace OMS.Migrations
 
                     b.Property<string>("Questioncontent")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("text")
                         .HasColumnName("questioncontent");
 
                     b.Property<string>("Questiontype")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("questiontype");
 
-                    b.HasKey("Questionid")
-                        .HasName("PK__question__62C2216AEFD90A2D");
+                    b.HasKey("Questionid");
 
                     b.HasIndex("Createdby");
 
@@ -544,70 +545,68 @@ namespace OMS.Migrations
 
                     b.HasIndex(new[] { "Isdeleted" }, "ix_questions_isdeleted");
 
-                    b.ToTable("questions", null, t =>
-                        {
-                            t.HasTrigger("trg_questions_update_totalmarks");
-                        });
+                    b.ToTable("questions");
                 });
 
             modelBuilder.Entity("OMS.Models.Entities.Refreshtoken", b =>
                 {
                     b.Property<long>("Tokenid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("bigint")
                         .HasColumnName("tokenid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Tokenid"));
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Createdbyip")
                         .HasMaxLength(45)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(45)")
                         .HasColumnName("createdbyip");
 
                     b.Property<DateTime>("Expiresat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("expiresat");
 
                     b.Property<string>("Jwtid")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("jwtid");
 
                     b.Property<string>("Replacedbytoken")
                         .HasMaxLength(400)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(400)")
                         .HasColumnName("replacedbytoken");
 
                     b.Property<DateTime?>("Revokedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("revokedat");
 
                     b.Property<string>("Revokedbyip")
                         .HasMaxLength(45)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(45)")
                         .HasColumnName("revokedbyip");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(400)")
                         .HasColumnName("token");
 
                     b.Property<string>("Useragent")
                         .HasMaxLength(300)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(300)")
                         .HasColumnName("useragent");
 
                     b.Property<int>("Userid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("userid");
 
-                    b.HasKey("Tokenid")
-                        .HasName("PK__refresht__AC17DF2F2CE6675E");
+                    b.HasKey("Tokenid");
 
                     b.HasIndex(new[] { "Expiresat" }, "ix_refreshtokens_expiresat");
 
@@ -623,17 +622,18 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Roleid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("roleid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Roleid"));
 
                     b.Property<string>("Rolename")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("rolename");
 
-                    b.HasKey("Roleid")
-                        .HasName("PK__roles__CD994BF2D0E014A6");
+                    b.HasKey("Roleid");
 
                     b.HasIndex(new[] { "Rolename" }, "UQ__roles__4685A0620D799878")
                         .IsUnique();
@@ -645,19 +645,21 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Answerid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("answerid");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Answerid"));
+
                     b.Property<int>("Attemptid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("attemptid");
 
                     b.Property<string>("Essayanswer")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("text")
                         .HasColumnName("essayanswer");
 
                     b.Property<int>("Questionid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("questionid");
 
                     b.Property<decimal?>("Score")
@@ -665,11 +667,10 @@ namespace OMS.Migrations
                         .HasColumnName("score");
 
                     b.Property<int?>("Selectedchoiceid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("selectedchoiceid");
 
-                    b.HasKey("Answerid")
-                        .HasName("PK__studenta__6837BD9C4E00477D");
+                    b.HasKey("Answerid");
 
                     b.HasIndex("Selectedchoiceid");
 
@@ -680,52 +681,50 @@ namespace OMS.Migrations
                     b.HasIndex(new[] { "Attemptid", "Questionid" }, "ux_studentanswers_attempt_question")
                         .IsUnique();
 
-                    b.ToTable("studentanswers", null, t =>
-                        {
-                            t.HasTrigger("trg_studentanswers_validate");
-                        });
+                    b.ToTable("studentanswers");
                 });
 
             modelBuilder.Entity("OMS.Models.Entities.Subject", b =>
                 {
                     b.Property<int>("Subjectid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("subjectid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Subjectid"));
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("Deletedat")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletedat");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<bool>("Isactive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("isactive");
 
                     b.Property<bool>("Isdeleted")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("isdeleted");
 
                     b.Property<string>("Subjectname")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("subjectname");
 
-                    b.HasKey("Subjectid")
-                        .HasName("PK__subjects__ACE1437884B53055");
+                    b.HasKey("Subjectid");
 
                     b.HasIndex(new[] { "Isdeleted" }, "ix_subjects_isdeleted");
 
@@ -739,56 +738,57 @@ namespace OMS.Migrations
                 {
                     b.Property<int>("Userid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("userid");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Userid"));
 
                     b.Property<string>("Avatarurl")
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("avatarurl");
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdat")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("email");
 
                     b.Property<string>("Fullname")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("fullname");
 
                     b.Property<bool>("Isactive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("isactive");
 
                     b.Property<string>("Passwordhash")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("passwordhash");
 
                     b.Property<int>("Roleid")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("roleid");
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("username");
 
-                    b.HasKey("Userid")
-                        .HasName("PK__users__CBA1B25799860EF1");
+                    b.HasKey("Userid");
 
                     b.HasIndex(new[] { "Roleid" }, "ix_users_roleid");
 
@@ -801,20 +801,19 @@ namespace OMS.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Examquestion", b =>
+            modelBuilder.Entity("ExamQuestion", b =>
                 {
                     b.HasOne("OMS.Models.Entities.Exam", null)
                         .WithMany()
                         .HasForeignKey("Examid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_eq_exam");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.Question", null)
                         .WithMany()
                         .HasForeignKey("Questionid")
-                        .IsRequired()
-                        .HasConstraintName("fk_eq_question");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OMS.Models.Entities.Choice", b =>
@@ -834,14 +833,14 @@ namespace OMS.Migrations
                     b.HasOne("OMS.Models.Entities.Subject", "Subject")
                         .WithMany("Courses")
                         .HasForeignKey("Subjectid")
-                        .IsRequired()
-                        .HasConstraintName("fk_courses_subject");
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "Teacher")
                         .WithMany("Courses")
                         .HasForeignKey("Teacherid")
-                        .IsRequired()
-                        .HasConstraintName("fk_courses_teacher");
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Subject");
 
@@ -854,15 +853,13 @@ namespace OMS.Migrations
                         .WithMany("Coursestudents")
                         .HasForeignKey("Courseid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_cs_course");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "Student")
                         .WithMany("Coursestudents")
                         .HasForeignKey("Studentid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_cs_student");
+                        .IsRequired();
 
                     b.Navigation("Course");
 
@@ -875,14 +872,13 @@ namespace OMS.Migrations
                         .WithMany("Exams")
                         .HasForeignKey("Courseid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_exams_course");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "CreatedbyNavigation")
                         .WithMany("Exams")
                         .HasForeignKey("Createdby")
-                        .IsRequired()
-                        .HasConstraintName("fk_exams_createdby");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
 
@@ -894,15 +890,14 @@ namespace OMS.Migrations
                     b.HasOne("OMS.Models.Entities.User", "CreatedbyNavigation")
                         .WithMany("Examaccesscodes")
                         .HasForeignKey("Createdby")
-                        .IsRequired()
-                        .HasConstraintName("fk_eac_createdby");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.Exam", "Exam")
                         .WithMany("Examaccesscodes")
                         .HasForeignKey("Examid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_eac_exam");
+                        .IsRequired();
 
                     b.Navigation("CreatedbyNavigation");
 
@@ -915,15 +910,13 @@ namespace OMS.Migrations
                         .WithMany("Examattempts")
                         .HasForeignKey("Examid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_attempt_exam");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "Student")
                         .WithMany("Examattempts")
                         .HasForeignKey("Studentid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_attempt_student");
+                        .IsRequired();
 
                     b.Navigation("Exam");
 
@@ -936,14 +929,13 @@ namespace OMS.Migrations
                         .WithOne("Examresult")
                         .HasForeignKey("OMS.Models.Entities.Examresult", "Attemptid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_result_attempt");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "GradedbyNavigation")
                         .WithMany("Examresults")
                         .HasForeignKey("Gradedby")
-                        .IsRequired()
-                        .HasConstraintName("fk_result_gradedby");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Attempt");
 
@@ -956,8 +948,7 @@ namespace OMS.Migrations
                         .WithMany("Lessons")
                         .HasForeignKey("Courseid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_lessons_course");
+                        .IsRequired();
 
                     b.Navigation("Course");
                 });
@@ -968,15 +959,13 @@ namespace OMS.Migrations
                         .WithMany("Lessonprogresses")
                         .HasForeignKey("Lessonid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_lp_lesson");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "Student")
                         .WithMany("Lessonprogresses")
                         .HasForeignKey("Studentid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_lp_student");
+                        .IsRequired();
 
                     b.Navigation("Lesson");
 
@@ -989,14 +978,13 @@ namespace OMS.Migrations
                         .WithMany("Questions")
                         .HasForeignKey("Courseid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_questions_course");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.User", "CreatedbyNavigation")
                         .WithMany("Questions")
                         .HasForeignKey("Createdby")
-                        .IsRequired()
-                        .HasConstraintName("fk_questions_createdby");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
 
@@ -1009,8 +997,7 @@ namespace OMS.Migrations
                         .WithMany("Refreshtokens")
                         .HasForeignKey("Userid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_refreshtokens_user");
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -1021,19 +1008,17 @@ namespace OMS.Migrations
                         .WithMany("Studentanswers")
                         .HasForeignKey("Attemptid")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_sa_attempt");
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.Question", "Question")
                         .WithMany("Studentanswers")
                         .HasForeignKey("Questionid")
-                        .IsRequired()
-                        .HasConstraintName("fk_sa_question");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OMS.Models.Entities.Choice", "Selectedchoice")
                         .WithMany("Studentanswers")
-                        .HasForeignKey("Selectedchoiceid")
-                        .HasConstraintName("fk_sa_choice");
+                        .HasForeignKey("Selectedchoiceid");
 
                     b.Navigation("Attempt");
 
@@ -1047,8 +1032,8 @@ namespace OMS.Migrations
                     b.HasOne("OMS.Models.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("Roleid")
-                        .IsRequired()
-                        .HasConstraintName("fk_users_role");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Role");
                 });
